@@ -1,0 +1,658 @@
+DROP DATABASE IF EXISTS delight;
+CREATE DATABASE IF NOT EXISTS delight;
+USE delight;
+
+DROP TABLE IF EXISTS person;
+CREATE TABLE person (
+	personID INT NOT NULL PRIMARY KEY,
+	Fname VARCHAR(30) DEFAULT NULL,
+	Lname VARCHAR(30) DEFAULT NULL,
+	phoneNum VARCHAR(30) DEFAULT NULL,
+	address VARCHAR(40) DEFAULT NULL
+);
+DROP TABLE IF EXISTS award;
+CREATE TABLE award (
+	awardID INT NOT NULL PRIMARY KEY,
+	awardName VARCHAR(30) DEFAULT NULL,
+	awardYear INT(10) DEFAULT NULL
+);
+DROP TABLE IF EXISTS chef;
+CREATE TABLE chef (
+	chefID INT NOT NULL PRIMARY KEY,
+	specialty VARCHAR(30) DEFAULT NULL,
+	personFID INT(20) DEFAULT NULL,
+	salary VARCHAR(10) DEFAULT NULL,
+	positionTitle VARCHAR(30) DEFAULT NULL
+);
+DROP TABLE IF EXISTS class;
+CREATE TABLE class (
+	classID INT NOT NULL PRIMARY KEY,
+	className VARCHAR(70) DEFAULT NULL,
+	roomNum VARCHAR(30) DEFAULT NULL,
+	classTime VARCHAR(30) DEFAULT NULL,
+	building VARCHAR(30) DEFAULT NULL
+);
+DROP TABLE IF EXISTS classStudent;
+CREATE TABLE classStudent (
+	classFID INT NOT NULL PRIMARY KEY,
+	studentFID INT NOT NULL,
+	classGrade VARCHAR(1) DEFAULT NULL
+);
+DROP TABLE IF EXISTS classTeacher;
+CREATE TABLE classTeacher (
+	classFID INT NOT NULL PRIMARY KEY,
+	chefFID INT NOT NULL
+);
+DROP TABLE IF EXISTS cookingAppliance;
+CREATE TABLE cookingAppliance (
+	applianceID INT NOT NULL PRIMARY KEY,
+	applianceName VARCHAR(30) DEFAULT NULL
+);
+DROP TABLE IF EXISTS eCookBook;
+CREATE TABLE eCookBook (
+	bookID INT NOT NULL PRIMARY KEY,
+	author VARCHAR(30) DEFAULT NULL,
+	title VARCHAR(30) DEFAULT NULL,
+	publishYear VARCHAR(10) DEFAULT NULL
+);
+DROP TABLE IF EXISTS email;
+CREATE TABLE email (
+	emailID INT NOT NULL PRIMARY KEY,
+	personFID INT NOT NULL,
+	emailAddress VARCHAR(30) DEFAULT NULL
+);
+DROP TABLE IF EXISTS ingredient;
+CREATE TABLE ingredient (
+	ingredientID INT NOT NULL PRIMARY KEY,
+	ingredientName VARCHAR(30) DEFAULT NULL,
+	ingredientType VARCHAR(30) DEFAULT NULL
+);
+
+DROP TABLE IF EXISTS recipe;
+CREATE TABLE recipe (
+	recipeID INT NOT NULL PRIMARY KEY,
+	cookTime VARCHAR(30) DEFAULT NULL,
+	recipeName VARCHAR(30) DEFAULT NULL
+);
+
+DROP TABLE IF EXISTS recipeAward;
+CREATE TABLE recipeAward (
+	awardFID INT NOT NULL PRIMARY KEY,
+	recipeFID INT NOT NULL
+);
+
+DROP TABLE IF EXISTS recipeInBook;
+CREATE TABLE recipeInBook (
+	bookFID INT NOT NULL PRIMARY KEY,
+	recipeFID INT NOT NULL
+);
+
+DROP TABLE IF EXISTS recipeIngredient;
+CREATE TABLE recipeIngredient (
+	ingredientFID INT NOT NULL PRIMARY KEY,
+	recipeFID INT NOT NULL,
+	amountMetric VARCHAR(20) DEFAULT NULL
+);
+
+DROP TABLE IF EXISTS student;
+CREATE TABLE student (
+	studentID INT NOT NULL PRIMARY KEY,
+	major VARCHAR(30) DEFAULT NULL,
+	personFID INT(20) DEFAULT NULL,
+	graduationDate VARCHAR(30) DEFAULT NULL
+);
+
+DROP TABLE IF EXISTS recipeAppliances;
+CREATE TABLE recipeAppliances (
+	recipeFID INT NOT NULL PRIMARY KEY,
+	applianceFID INT NOT NULL
+);
+
+DROP TABLE IF EXISTS recipeWork;
+CREATE TABLE recipeWork (
+	recipeFID INT NOT NULL PRIMARY KEY,
+	chefFID INT NOT NULL,
+	studentFID INT NOT NULL
+);
+
+/*
+Add foreign key constraints
+*/
+
+ALTER TABLE email
+	ADD CONSTRAINT FK_EM FOREIGN KEY (personFID) REFERENCES person(personID);
+    
+ALTER TABLE classStudent
+	ADD CONSTRAINT FK_CS FOREIGN KEY (classFID) REFERENCES class(classID),
+	ADD CONSTRAINT FK_CS2 FOREIGN KEY (studentFID) REFERENCES student(studentID);
+
+ALTER TABLE classTeacher
+	ADD CONSTRAINT FK_CT FOREIGN KEY (classFID) REFERENCES class(classID),
+	ADD CONSTRAINT FK_CT2 FOREIGN KEY (chefFID) REFERENCES chef(chefID);
+
+ALTER TABLE recipeWork
+	ADD CONSTRAINT FK_RW FOREIGN KEY (recipeFID) REFERENCES recipe(recipeID),
+	ADD CONSTRAINT FK_RW2 FOREIGN KEY (chefFID) REFERENCES chef(chefID),
+	ADD CONSTRAINT FK_RW3 FOREIGN KEY (studentFID) REFERENCES student(studentID);
+    
+ALTER TABLE recipeAward
+	ADD CONSTRAINT FK_RA FOREIGN KEY (recipeFID) REFERENCES recipe(recipeID),
+	ADD CONSTRAINT FK_RA2 FOREIGN KEY (awardFID) REFERENCES award(awardID);
+    
+ALTER TABLE recipeAppliances
+	ADD CONSTRAINT FK_RAP FOREIGN KEY (recipeFID) REFERENCES recipe(recipeID),
+	ADD CONSTRAINT FK_RAP2 FOREIGN KEY (applianceFID) REFERENCES cookingAppliance(applianceID);
+    
+ALTER TABLE recipeIngredient
+	ADD CONSTRAINT FK_RI FOREIGN KEY (ingredientFID) REFERENCES ingredient(ingredientID),
+	ADD CONSTRAINT FK_RI2 FOREIGN KEY (recipeFID) REFERENCES recipe(recipeID);
+    
+ALTER TABLE recipeInBook
+	ADD CONSTRAINT FK_RIB FOREIGN KEY (bookFID) REFERENCES eCookBook(bookID),
+	ADD CONSTRAINT FK_RIB2 FOREIGN KEY (recipeFID) REFERENCES recipe(recipeID);
+    
+ALTER TABLE student
+	ADD CONSTRAINT FK_PE FOREIGN KEY (personFID) REFERENCES person(personID);
+    
+ALTER TABLE chef
+	ADD CONSTRAINT FK_CH FOREIGN KEY (personFID) REFERENCES person(personID);
+
+INSERT INTO person(personID, Fname, Lname, phoneNum, address)
+VALUES(1,"Chava","Ashley","(524) 455-1011","P.O. Box 514 6849 Lacinia Street"),
+(2,"Chelsea","Bonner","(673) 437-0037","Ap #277-637 Magnis Rd."),
+(3,"Chester","Weber","(324) 424-4526","Ap #445-9117 Metus. Rd."),
+(4,"Chester","Shelton","(701) 635-6773","569-1417 Sed Rd."),
+(5,"Colorado","Wood","(383) 135-6687","Ap #158-2737 Sodales. Ave"),
+(6,"Colorado","Simon","(634) 623-7780","P.O. Box 101, 9639 Phasellus Av."),
+(7,"Cullen","Duke","(634) 525-7219","7106 Ornare Rd."),
+(8,"Denton","Mcgowan","(824) 739-6001","735 Maecenas St."),
+(9,"Eaton","Nelson","(186) 234-4222","6811 Ad Rd."),
+(10,"Eaton","Clemons","(543) 599-1241","Ap #928-6250 Quis Street"),
+(11,"Eleanor","Wade","(314) 126-5408","P.O. Box 702, 8162 Id Road"),
+(12,"Eric","Tate","(692) 642-8931","7470 Volutpat. Street"),
+(13,"Fletcher","Hayden","(375) 802-9362","Ap #550-8411 Mauris Av."),
+(14,"George","Pearson","(426) 375-0736","P.O. Box 279, 8760 Ut Rd."),
+(15,"Ginger","Yates","(767) 222-3416","429-3025 Mauris. Road"),
+(16,"Gisela","Schroeder","(469) 811-5329","8782 Est Av."),
+(17,"Gisela","Mcfadden","(852) 912-4211","712-1887 Neque. Ave"),
+(18,"Giselle","Lambert","(709) 168-7461","P.O. Box 966, 1268 Lobortis Ave"),
+(19,"Griffin","Ashley","(673) 805-3050","3924 Eu, Rd."),
+(20,"Hamilton","Bird","(715) 513-0615","618-1689 Porttitor Rd."),
+(21,"Hammett","Morse","(965) 253-8405","P.O. Box 559, 6441 Tempus Av."),
+(22,"Hayden","Le","(126) 423-2917","Ap #575-2671 Eu Rd."),
+(23,"Holly","Terry","(408) 826-9007","P.O. Box 459, 3636 Enim Avenue"),
+(24,"Holmes","Blair","(293) 279-6683","Ap #913-2102 Cubilia Rd."),
+(25,"Holmes","Craig","(987) 330-5959","P.O. Box 912, 5772 Tortor Ave"),
+(26,"Hyacinth","Norman","(552) 909-7135","Ap #298-229 Arcu. Road"),
+(27,"Hyacinth","Burt","(271) 670-1578","548-2187 Nunc St."),
+(28,"Isaac","Johns","(526) 391-6128","905-3876 Et Av."),
+(29,"Jamal","Cole","(356) 128-6156","Ap #831-7835 Nunc Avenue"),
+(30,"Jane","Patterson","(704) 722-8586","5841 Lorem, Ave"),
+(31,"Jason","Mcpherson","(112) 257-0500","P.O. Box 334, 4775 Placerat Av."),
+(32,"Kyra","Robertson","(998) 142-4733","Ap #473-6620 Donec Av."),
+(33,"Leandra","Levine","(114) 401-6829","3668 Vivamus Av."),
+(34,"Lois","Mccarthy","(695) 613-2039","576-9850 Phasellus Road"),
+(35,"Maggy","Craft","(924) 649-1445","2912 Leo. Road"),
+(36,"Maisie","Camacho","(121) 961-2306","Ap #538-1845 Porttitor Rd."),
+(37,"Martin","Jensen","(297) 180-7779","Ap #875-2889 Elit. St."),
+(38,"Melyssa","Lindsay","(142) 479-5121","8815 Risus St."),
+(39,"Mercedes","Hurley","(591) 466-5182","1725 Sit St."),
+(40,"Moses","Ryan","(790) 365-7061","614-7922 Aliquam, Ave"),
+(41,"Nathan","Nguyen","(523) 829-7374","Ap #786-7201 Aliquam Avenue"),
+(42,"Nathaniel","Mills","(494) 735-3578","P.O. Box 666, 1179 Faucibus Rd."),
+(43,"Nehru","Hopper","(346) 544-1040","Ap #680-2931 Feugiat St."),
+(44,"Nell","Harrison","(560) 774-4477","697-9416 Sed St."),
+(45,"Oren","Rollins","(801) 273-7610","P.O. Box 666, 6596 Ac Rd."),
+(46,"Oscar","Lane","(492) 341-9993","P.O. Box 570, 1956 Est Avenue"),
+(47,"Paul","Workman","(950) 235-0642","Ap #760-368 In Street"),
+(48,"Peter","Nash","(859) 203-6339","6426 Suspendisse Rd."),
+(49,"Phillip","Sykes","(999) 612-2453","Ap #818-7536 Risus Rd."),
+(50,"Plato","Fisher","(141) 175-3423","3907 Eu Av."),
+(51,"Quinn","Buck","(255) 118-9350","P.O. Box 528, 6256 Lectus Road"),
+(52,"Quyn","Paul","(707) 704-1014","P.O. Box 170, 2920 Libero. Road"),
+(53,"Rama","Woodward","(408) 610-8867","1864 Eget Rd."),
+(54,"Rana","Compton","(288) 667-6370","P.O. Box 333, 4918 Ipsum. Rd."),
+(55,"Raphael","Santos","(592) 388-7188","Ap #572-6625 Ipsum Rd."),
+(56,"Raven","Barron","(684) 420-6870","P.O. Box 664, 5404 Nunc Rd."),
+(57,"Raymond","Wolf","(409) 719-3102","120-6555 Ut Av."),
+(58,"Reed","Ewing","(644) 104-6881","P.O. Box 711, 6423 Sed St."),
+(59,"Regina","Freeman","(628) 913-0689","7380 At Avenue"),
+(60,"Rhoda","Britt","(602) 376-4307","Ap #874-5932 Sit Road"),
+(61,"Rhonda","Lindsay","(589) 213-0498","Ap #393-6893 Felis Ave"),
+(62,"Richard","Terrell","(683) 975-1295","Ap #436-491 Augue. Rd."),
+(63,"Salvador","Kent","(993) 538-1312","P.O. Box 692, 8028 Tristique St."),
+(64,"September","Middleton","(401) 529-0612","Ap #153-9976 Adipiscing. Rd."),
+(65,"Shafira","Travis","(177) 817-9494","Ap #792-7863 Dolor, Street"),
+(66,"Sylvia","Lambert","(456) 293-2236","P.O. Box 398, 2664 Vehicula Ave"),
+(67,"Tasha","Carter","(719) 380-2271","Ap #927-8118 Metus Ave"),
+(68,"Teagan","Hurley","(241) 244-4632","857-1914 Ac Street"),
+(69,"Teagan","Parsons","(915) 825-0592","Ap #749-8114 A Av."),
+(70,"Teegan","Cherry","(239) 610-7806","P.O. Box 855, 7465 Lectus Street"),
+(71,"Tucker","Hooper","(380) 993-6004","737-5295 Aliquam Street"),
+(72,"Veronica","Dodson","(759) 134-1714","Ap #117-201 Elit, Road"),
+(73,"Whoopi","Doyle","(949) 257-1577","9623 Lectus Rd."),
+(74,"William","Ingram","(504) 411-9086","P.O. Box 985, 8432 Eu, Ave"),
+(75,"Wylie","England","(811) 758-3141","6494 Nec, Av."),
+(76,"Wylie","Vang","(364) 623-0039","263-7600 Sollicitudin Street"),
+(77,"Xena","Hawkins","(670) 397-8700","2739 Imperdiet St."),
+(78,"Yoshi","Buck","(172) 503-1115","681-8251 Ut Avenue"),
+(79,"Zenaida","Barber","(260) 308-2496","5917 Dolor Road"),
+(80,"Zenaida","Hooper","(929) 237-2975","P.O. Box 758, 2375 Libero Street"),
+(81,"Aaron","Camacho","(293) 580-0019","332-5598 Est Av."),
+(82,"Abra","Mitchell","(405) 419-1566","3802 Congue Avenue"),
+(83,"Amelia","Booker","(914) 547-0126","P.O. Box 659, 7433 In, Road"),
+(84,"Amena","Kline","(847) 671-3336","493-2886 Sem Avenue"),
+(85,"Arden","Suarez","(702) 576-6452","642-4756 Non Av."),
+(86,"Arden","Hansen","(711) 690-0966","P.O. Box 328, 7646 Vitae Rd."),
+(87,"Arden","Harmon","(188) 823-3052","Ap #403-1712 Dui, Road"),
+(88,"Ayanna","Knowles","(121) 125-1421","533 Ornare Av."),
+(89,"Basil","Knight","(284) 941-8152","924-1368 Orci, Street"),
+(90,"Bethany","Daniels","(685) 248-7126","939-4716 Fusce Rd."),
+(91,"Blair","Schwartz","(387) 711-8184","1697 Tincidunt Ave"),
+(92,"Blaze","Gallagher","(440) 424-2248","9412 Ridiculus St."),
+(93,"Branden","Hunt","(658) 624-5723","9308 Rutrum Ave"),
+(94,"Brittany","Hurley","(775) 915-4246","1606 Etiam Road"),
+(95,"Cally","Livingston","(655) 827-5638","881-7511 Duis Av."),
+(96,"Cara","Sawyer","(652) 460-2653","P.O. Box 486, 3518 Arcu St."),
+(97,"Cassandra","Lawrence","(958) 417-4688","467-1695 Nisl Street"),
+(98,"Cedric","Savage","(240) 754-9332","P.O. Box 908, 9036 A Rd."),
+(99,"Chadwick","Skinner","(387) 930-6576","367-4184 Vitae St."),
+(100,"Chandler","Albert","(271) 204-7885","P.O. Box 485, 6313 Pellentesque Ave");
+
+INSERT INTO email(emailID, personFID, emailAddress)
+VALUES(1,1,"cashley1@chefu.edu"),
+(2,2,"cbonner1@chefu.edu"),
+(3,3,"cweber1@chefu.edu"),
+(4,4,"cshelton1@chefu.edu"),
+(5,5,"cwood1@chefu.edu"),
+(6,6,"csimon1@chefu.edu"),
+(7,7,"cduke1@chefu.edu"),
+(8,8,"dmcgowan1@chefu.edu"),
+(9,9,"enelson1@chefu.edu"),
+(10,10,"eclemons1@chefu.edu"),
+(11,11,"ewade1@chefu.edu"),
+(12,12,"etate1@chefu.edu"),
+(13,13,"fhayden1@chefu.edu"),
+(14,14,"gpearson1@chefu.edu"),
+(15,15,"gyates1@chefu.edu"),
+(16,16,"gschroeder1@chefu.edu"),
+(17,17,"gmcfadden1@chefu.edu"),
+(18,18,"glambert1@chefu.edu"),
+(19,19,"gashley1@chefu.edu"),
+(20,20,"hbird1@chefu.edu"),
+(21,21,"hmorse1@chefu.edu"),
+(22,22,"hle1@chefu.edu"),
+(23,23,"hterry1@chefu.edu"),
+(24,24,"hblair1@chefu.edu"),
+(25,25,"hcraig1@chefu.edu"),
+(26,26,"hnorman1@chefu.edu"),
+(27,27,"hburt1@chefu.edu"),
+(28,28,"ijohns1@chefu.edu"),
+(29,29,"jcole1@chefu.edu"),
+(30,30,"jpatterson1@chefu.edu"),
+(31,31,"jmcpherson1@chefu.edu"),
+(32,32,"krobertson1@chefu.edu"),
+(33,33,"llevine1@chefu.edu"),
+(34,34,"lmccarthy1@chefu.edu"),
+(35,35,"mcraft1@chefu.edu"),
+(36,36,"mcamacho1@chefu.edu"),
+(37,37,"mjensen1@chefu.edu"),
+(38,38,"mlindsay1@chefu.edu"),
+(39,39,"mhurley1@chefu.edu"),
+(40,40,"mryan1@chefu.edu"),
+(41,41,"nnguyen1@chefu.edu"),
+(42,42,"nmills1@chefu.edu"),
+(43,43,"nhopper1@chefu.edu"),
+(44,44,"nharrison1@chefu.edu"),
+(45,45,"orollins1@chefu.edu"),
+(46,46,"olane1@chefu.edu"),
+(47,47,"pworkman1@chefu.edu"),
+(48,48,"pnash1@chefu.edu"),
+(49,49,"psykes1@chefu.edu"),
+(50,50,"pfisher1@chefu.edu"),
+(51,51,"qbuck1@chefu.edu"),
+(52,52,"qpaul1@chefu.edu"),
+(53,53,"rwoodward1@chefu.edu"),
+(54,54,"rcompton1@chefu.edu"),
+(55,55,"rsantos1@chefu.edu"),
+(56,56,"rbarron1@chefu.edu"),
+(57,57,"rwolf1@chefu.edu"),
+(58,58,"rewing1@chefu.edu"),
+(59,59,"rfreeman1@chefu.edu"),
+(60,60,"rbritt1@chefu.edu"),
+(61,61,"rlindsay1@chefu.edu"),
+(62,62,"rterrell1@chefu.edu"),
+(63,63,"skent1@chefu.edu"),
+(64,64,"smiddleton1@chefu.edu"),
+(65,65,"stravis1@chefu.edu"),
+(66,66,"slambert1@chefu.edu"),
+(67,67,"tcarter1@chefu.edu"),
+(68,68,"thurley1@chefu.edu"),
+(69,69,"tparsons1@chefu.edu"),
+(70,70,"tcherry1@chefu.edu"),
+(71,71,"thooper1@chefu.edu"),
+(72,72,"vdodson1@chefu.edu"),
+(73,73,"wdoyle1@chefu.edu"),
+(74,74,"wingram1@chefu.edu"),
+(75,75,"wengland1@chefu.edu"),
+(76,76,"wvang1@chefu.edu"),
+(77,77,"xhawkins1@chefu.edu"),
+(78,78,"ybuck1@chefu.edu"),
+(79,79,"zbarber1@chefu.edu"),
+(80,80,"zhooper1@chefu.edu"),
+(81,81,"acamacho@chefu.edu"),
+(82,82,"amitchell@chefu.edu"),
+(83,83,"abooker@chefu.edu"),
+(84,84,"akline@chefu.edu"),
+(85,85,"asuarez@chefu.edu"),
+(86,86,"ahansen@chefu.edu"),
+(87,87,"aharmon@chefu.edu"),
+(88,88,"aknowles@chefu.edu"),
+(89,89,"bknight@chefu.edu"),
+(90,90,"bdaniels@chefu.edu"),
+(91,91,"bschwartz@chefu.edu"),
+(92,92,"bgallagher@chefu.edu"),
+(93,93,"bhunt@chefu.edu"),
+(94,94,"bhurley@chefu.edu"),
+(95,95,"clivingston@chefu.edu"),
+(96,96,"csawyer@chefu.edu"),
+(97,97,"clawrence@chefu.edu"),
+(98,98,"csavage@chefu.edu"),
+(99,99,"cskinner@chefu.edu"),
+(100,100,"calbert@chefu.edu");
+    
+INSERT INTO chef(chefID, specialty, salary, positionTitle, personFID)
+   	VALUES( 1, "Seafood/Sushi",  810000, "Head Chef", 1 ),
+         	( 6, "Seafood/Sushi",  72000, "Sous Chef", 6 ),
+         	( 11, "Seafood/Sushi",  60000, "Entremetier", 11 ),
+         	( 18, "Seafood/Sushi",  60000, "Saucier", 18 ),
+         	( 2, "Smoking/Barbeque",  82500, "Head Chef", 2 ),
+         	( 7, "Smoking/Barbeque",  77500, "Sous Chef", 7 ),
+         	( 12, "Smoking/Barbeque",  70000, "Entremetier", 12 ),
+         	( 16, "Smoking/Barbeque",  69500, "Entremetier", 16 ),
+         	( 17, "Smoking/Barbeque",  69000, "Saucier", 17 ),
+         	( 3, "Baking/Pastry",  79000, "Head Chef", 3 ),
+         	( 8, "Baking/Pastry",  73000, "Sous Chef", 8 ),
+         	( 13, "Baking/Pastry",  67000, "Patissier", 13 ),
+         	( 19, "Baking/Pastry",  65000, "Saucier", 19 ),
+         	( 4, "Sauce/Soup",  74000, "Head Chef", 4 ),
+         	( 9, "Sauce/Soup",  68000, "Sous Chef", 9 ),
+         	( 14, "Sauce/Soup",  63000, "Saucier", 14 ),
+         	( 20, "Sauce/Soup",  65000, "Entremetier", 20 ),
+         	( 5, "Cold dish",  70000, "Head Chef", 5 ),
+         	( 10, "Cold dish",  65000, "Saucier", 10 ),
+         	( 15, "Cold dish",  63000, "Garde Manger", 15 );
+
+INSERT INTO student( studentID, major, personFID, graduationDate)
+VALUES( 1 , "Baking Arts" , 21 , "2021-09-11" ) ,
+( 2 , "Pastry Arts" , 22 , "2020-05-28" ) ,
+( 3 , "Professional Cooking" , 23 , "2020-05-14" ) ,
+( 4 , "Culinary Arts" , 24 , "2022-02-03" ) ,
+( 5 , "Baking Arts" , 25 , "2022-11-02" ) ,
+( 6 , "Pastry Arts" , 26 , "2021-11-07" ) ,
+( 7 , "Baking Arts" , 27 , "2024-01-13" ) ,
+( 8 , "Pastry Arts" , 28 , "2023-04-09" ) ,
+( 9 , "Professional Cooking" , 29 , "2022-11-09" ) ,
+( 10 , "Culinary Arts" , 30 , "2020-05-04" ) ,
+( 11 , "Professional Cooking" , 31 , "2021-07-06" ) ,
+( 12 , "Culinary Arts" , 32 , "2021-04-16" ) ,
+( 13 , "Culinary Arts" , 33 , "2024-07-09" ) ,
+( 14 , "Culinary Arts" , 34 , "2020-02-20" ) ,
+( 15 , "Professional Cooking" , 35 , "2024-04-28" ) ,
+( 16 , "Professional Cooking" , 36 , "2021-02-11" ) ,
+( 17 , "Baking Arts" , 37 , "2023-05-05" ) ,
+( 18 , "Pastry Arts" , 38 , "2021-06-19" ) ,
+( 19 , "Pastry Arts" , 39 , "2019-12-31" ) ,
+( 20 , "Baking Arts" , 40 , "2022-01-20" ) ,
+( 21 , "Professional Cooking" , 41 , "2020-10-01" ) ,
+( 22 , "Culinary Arts" , 42 , "2023-12-03" ) ,
+( 23 , "Pastry Arts" , 43 , "2021-10-28" ) ,
+( 24 , "Culinary Arts" , 44 , "2020-08-02" ) ,
+( 25 , "Professional Cooking" , 45 , "2021-04-23" ) ,
+( 26 , "Professional Cooking" , 46 , "2023-04-18" ) ,
+( 27 , "Baking Arts" , 47 , "2022-09-24" ) ,
+( 28 , "Pastry Arts" , 48 , "2020-08-04" ) ,
+( 29 , "Culinary Arts" , 49 , "2020-09-11" ) ,
+( 30 , "Baking Arts" , 50 , "2021-09-05" ) ,
+( 31 , "Professional Cooking" , 51 , "2024-01-18" ) ,
+( 32 , "Pastry Arts" , 52 , "2021-08-30" ) ,
+( 33 , "Baking Arts" , 53 , "2024-03-28" ) ,
+( 34 , "Professional Cooking" , 54 , "2020-03-17" ) ,
+( 35 , "Culinary Arts" , 55 , "2022-06-03" ) ,
+( 36 , "Professional Cooking" , 56 , "2023-11-06" ) ,
+( 37 , "Culinary Arts" , 57 , "2022-10-28" ) ,
+( 38 , "Pastry Arts" , 58 , "2023-06-02" ) ,
+( 39 , "Professional Cooking" , 59 , "2023-03-13" ) ,
+( 40 , "Culinary Arts" , 60 , "2022-12-28" ) ,
+( 41 , "Professional Cooking" , 61 , "2019-12-06" ) ,
+( 42 , "Culinary Arts" , 62 , "2024-09-17" ) ,
+( 43 , "Culinary Arts" , 63 , "2020-02-08" ) ,
+( 44 , "Culinary Arts" , 64 , "2022-10-13" ) ,
+( 45 , "Professional Cooking" , 65 , "2020-05-28" ) ,
+( 46 , "Professional Cooking" , 66 , "2024-08-04" ) ,
+( 47 , "Baking Arts" , 67 , "2023-10-20" ) ,
+( 48 , "Pastry Arts" , 68 , "2020-09-05" ) ,
+( 49 , "Pastry Arts" , 69 , "2024-06-06" ) ,
+( 50 , "Baking Arts" , 70 , "2023-10-13" ) ,
+( 51 , "Professional Cooking" , 71 , "2024-04-21" ) ,
+( 52 , "Culinary Arts" , 72 , "2024-09-18" ) ,
+( 53 , "Pastry Arts" , 73 , "2023-08-22" ) ,
+( 54 , "Culinary Arts" , 74 , "2020-07-29" ) ,
+( 55 , "Professional Cooking" , 75 , "2020-06-09" ) ,
+( 56 , "Professional Cooking" , 76 , "2024-09-02" ) ,
+( 57 , "Baking Arts" , 77 , "2024-04-30" ) ,
+( 58 , "Pastry Arts" , 78 , "2023-01-18" ) ,
+( 59 , "Culinary Arts" , 79 , "2022-08-27" ) ,
+( 60 , "Baking Arts" , 80 , "2024-10-16" ) ,
+( 61 , "Professional Cooking" , 81 , "2022-02-24" ) ,
+( 62 , "Pastry Arts" , 82 , "2024-08-24" ) ,
+( 63 , "Baking Arts" , 83 , "2020-11-02" ) ,
+( 64 , "Baking Arts" , 84 , "2022-08-13" ) ,
+( 65 , "Pastry Arts" , 85 , "2022-09-08" ) ,
+( 66 , "Professional Cooking" , 86 , "2024-11-07" ) ,
+( 67 , "Culinary Arts" , 87 , "2023-08-07" ) ,
+( 68 , "Professional Cooking" , 88 , "2020-09-08" ) ,
+( 69 , "Culinary Arts" , 89 , "2024-07-10" ) ,
+( 70 , "Culinary Arts" , 90 , "2020-11-25" ) ,
+( 71 , "Culinary Arts" , 91 , "2020-01-13" ) ,
+( 72 , "Professional Cooking" , 92 , "2020-07-09" ) ,
+( 73 , "Professional Cooking" , 93 , "2023-10-09" ) ,
+( 74 , "Baking Arts" , 94 , "2022-12-27" ) ,
+( 75 , "Pastry Arts" , 95 , "2021-03-24" ) ,
+( 76 , "Pastry Arts" , 96 , "2023-01-16" ) ,
+( 77 , "Baking Arts" , 97 , "2024-11-26" ) ,
+( 78 , "Professional Cooking" , 98 , "2020-04-20" ) ,
+( 79 , "Culinary Arts" , 99 , "2020-04-25" ) ,
+( 80 ,"Pastry Arts", 100, "2023-06-24" );
+
+INSERT INTO class(classID, className, roomNum, classTime, building)
+   	VALUES( 110, "Sanitation and Safety", "PU-210", "MWF 8:00AM-9:00AM", "Puck"),
+         	( 111, "Hospitality Studies", "PU-211", "MWF 9:00AM-10:00AM", "Puck"),
+         	( 112, "Nutrition for Foodservice", "PU-212", "MWF 8:00AM-9:00AM", "Puck"),
+         	( 130, "Menu Design", "PU-213", "MWF 9:30AM-10:30AM", "Puck"),
+         	( 135, "Food and Beverage Service", "PU-210", "MWF 9:30AM-10:30AM", "Puck"),
+         	( 140, "Culinary Skills I", "PU-211", "MWF 10:30AM-11:30AM", "Puck"),
+         	( 160, "Baking I", "PU-212", "MWF 9:30AM-10:30AM", "Puck"),
+         	( 170, "Garde Manger I", "PU-213", "MWF 11:00AM-12:00PM", "Puck"),
+         	 
+         	( 136, "Food and Beverage Service Lab", "RA-214", "TTR 8:00AM-10:00AM", "Ramsay"),
+         	( 141, "Culinary Skills I Lab", "RA-210", "TTR 8:00AM-10:00AM", "Ramsay"),	 
+         	( 161, "Baking I Lab", "RA-212", "TTR 10:00AM-1:00PM", "Ramsay"),      	 
+         	( 171, "Garde Manger I Lab", "RA-211", "TTR 9:00AM-11:00AM", "Ramsay"), 	 
+         	( 241, "Culinary Skills II Lab", "RA-210", "TTR 10:30AM-1:30PM", "Ramsay"),	 
+         	( 246, "Contemporary Cuisines Lab", "RA-213", "TTR 8:00AM-11:00AM", "Ramsay"), 	 
+         	( 261, "Baking II Lab", "RA-212", "TTR 1:30PM-4:30PM", "Ramsay"),	 
+         	( 271, "Garde Manger II Lab", "RA-211", "TTR 11:30AM-3:00AM", "Ramsay"),   
+        	 
+         	( 220, "Cost Control-Food and Beverage", "LA-210", "MWF 8:00AM-9:00AM", "Lagasse"),
+         	( 225, "Beverage Management", "LA-211", "MWF 8:00AM-9:00AM", "Lagasse"),
+         	( 240, "Culinary Skills II", "LA-212", "MWF 9:30AM-10:30AM", "Lagasse"),
+         	( 245, "Contemporary Cuisines", "LA-213", "MWF 9:30AM-10:30AM", "Lagasse"),
+         	( 247, "Human Resource Management-Hospitality", "LA-210", "MWF 9:30AM-10:30AM", "Lagasse"),
+         	( 260, "Baking II", "LA-211", "MWF 9:30AM-10:30AM", "Lagasse"),
+         	( 270, "Garde Manger II", "LA-212", "MWF 11:00AM-12:00PM", "Lagasse"),  
+         	( 283, "Farm-To-Table", "LA-213", "MWF 11:00AM-12:00PM", "Lagasse");
+
+INSERT INTO recipe(recipeID, cookTime, recipeName)
+   	VALUES(1, "1 Hour", "Seafood Pasta"), (2, "1 Hour", "Lasagna"),
+        	(3, "15 Mins", "Chicken Salad"), (4, "45 Mins", "Chocolate Cake"),
+        	(5, "35 Mins", "Cauliflower Soup"), (6, "45 Mins", "Pizza"),
+        	(7, "15 Mins", "Grilled Sandwich"), (8, "45 Mins", "Shrimp Fried Rice"),
+        	(9, "1 Hour", "Steak"), (10, "30 Hour", "Rice & Gravy"),
+        	(11, "1 Hour", "Shrimp Scampi"), (12, "1 Hour", "Filet Mignon"),
+        	(13, "30 Mins", "Fish and Chips"), (14, "25 Mins", "Grilled Salmon"),
+        	(15, "30 Mins", "Tacos"), (16, "45 Mins", "Omelette"),
+        	(17, "45 Mins", "Chicken Burrito"), (18, "20 Mins", "Pancakes"),
+        	(19, "30 Mins", "Mac & Cheese"), (20, "20 Mins", "Mixed Vegetables");
+
+INSERT INTO ingredient(ingredientID, ingredientName, ingredientType)
+   	VALUES	(1, "Shrimp", "Crustacean"), (2, "Catfish", "Fish"),
+            	(3, "Crab", "Crustacean"), (4, "Cod", "Fish"),
+            	(5, "Haddock", "Fish"), (6, "Carrot", "Vegetable"),
+            	(7, "Celery", "Vegetable"), (8, "Potato", "Root Vegetable"),
+            	(9, "Sweet Potato", "Root Vegetable"), (10, "Taro", "Root Vegetable"),
+            	(11, "Garlic", "Vegetable"), (12, "Red Onion", "Vegetable"),
+            	(13, "Yellow Onion", "Vegetable"), (14, "Tomato", "Vegetable"),
+            	(15, "Green Bean", "Vegetable"), (16, "Oregano", "Herb"),
+            	(17, "Sage", "Herb"), (18, "Thyme", "Herb"),
+            	(19, "Parsley", "Herb"), (20, "Rosemary", "Herb"),
+            	(21, "Pepper", "Spice"), (22, "Paprika", "Spice"),
+            	(23, "Italian Seasoning", "Spice"), (24, "Ginger", "Spice"),
+            	(25, "Cinnamon", "Spice"), (26, "Vanilla Extract", "Spice/Flavouring"),
+            	(27, "Salt", "Spice"), (28, "Olive Oil", "Oils"),
+            	(29, "Canola Oil", "Oils"), (30, "Vegetable Oil", "Oils"),
+            	(31, "Balsamic Vinegar", "Vinegars"), (32, "Distilled White Vinegar", "Vinegars"),
+            	(33, "Red Wine Vinegar", "Vinegars"), (34, "Rice Vinegar", "Vinegars"),
+            	(35, "Ketchup", "Condiment"), (36, "Mustard", "Condiment"),
+            	(37, "Mayonnaise", "Condiment"), (38, "Soy Sauce", "Sauce"),
+            	(39, "Teriyaki Sauce", "Sauce"), (40, "Worcestershire Sauce", "Sauce"),
+            	(41, "Black Bean", "Beans"), (42, "Chickpea", "Beans"),
+            	(43, "Kidney Bean", "Beans"), (44, "Beef Broth", "Stock"),
+            	(45, "Chicken Broth", "Stock"), (46, "Vegetable Broth", "Stock"),
+            	(47, "Tuna Fish", "Fish"), (48, "Chicken", "Poultry"),
+            	(49, "Duck", "Poultry"), (50, "Beef", "Meat"),
+            	(51, "Pig", "Meat"), (52, "Salmon", "Fish"),
+            	(53, "Olives", "Vegetable"), (54, "Beef", "Meat"),
+            	(55, "Egg", "Poultry"), (56, "Lemon", "Fruit"),
+            	(57, "Lime", "Fruit"), (58, "Honey", "Flavouring"),
+            	(59, "Apple", "Fruit"), (60, "Pear", "Fruit"),
+            	(61, "Blueberry", "Fruit"), (62, "Blackberry", "Fruit"),
+            	(63, "Raspberry", "Fruit"), (64, "Strawberry", "Fruit"),
+            	(65, "Milk", "Dairy"), (66, "Butter", "Dairy"),
+            	(67, "Sour Cream", "Dairy"), (68, "Whipped Cream", "Dairy"),
+            	(69, "Heavy Cream", "Dairy"), (70, "Butter", "Dairy"),
+            	(71, "Spaghetti", "Noodles"), (72, "Ravioli", "Noodles"),
+            	(73, "Penne", "Noodles"), (74, "Fettuccine", "Noodles"),
+            	(75, "Egg Noodles", "Noodles"), (76, "Rice Noodles", "Noodles"),
+            	(77, "Rice", "Grain"), (78, "Flour", "Grain"),
+            	(79, "Millet", "Grain"), (80, "Barley", "Grain"),
+            	(81, "Peas", "Legume"), (82, "Peanut", "Legume"),
+            	(83, "Cashew", "Nuts"), (84, "Almond", "Nuts");
+
+INSERT INTO eCookBook(bookID, author, title, publishYear)
+   	VALUES(1, "Melody Matthews", "How to Be A Chief!", "2016"), (2, "Efan Hawkins", "The Joy of Cooking", "1999"),
+        	(3, "Nico Valencia", "Essentials of Cooking", "2018"), (4, "Kier Tate", "Vibration Cooking", "2017"),
+        	(5, "Tia Stein", "Caliber Cooking", "2010");
+	 
+INSERT INTO award(awardID, awardName, awardYear)
+   	VALUES(1, "Best Smelling", 1998),
+        	(2, "The People's Choice", 1999), (3, "Best Looking", 2002),
+        	(4, "Best Pasta", 2019), (5, "Best Overall", 2010),
+        	(6, "Best Homemade", 2007), (7, "Best Seafood", 2016),
+        	(8, "Best Steak", 2015), (9, "Best Breakfast", 2014),
+        	(10, "Best Overall: Runner Up", 2019);
+  	 
+INSERT INTO cookingAppliance(applianceID, applianceName)
+   	VALUES(1, "Air Fryer"), (2, "Oven"),
+        	(3, "Toaster"), (4, "Rice Cooker"),
+        	(5, "Pots"), (6, "Pans"),
+   		 (7, "Deep Fryer"), (8, "Whisk"),
+   		 (9, "Knives"), (10, "Microwave");
+
+
+SELECT person.personID, person.fName, person.lName, chef.positionTitle, chef.specialty, chef.salary, email.emailAddress
+  FROM person, chef, email
+  WHERE  person.personID = chef.personFID AND person.personID = email.personFID;
+
+SELECT person.personID, person.fName, person.lName, student.major, student.graduationDate
+  FROM person, student, email
+  WHERE  person.personID = student.personFID AND person.personID = email.personFID;
+ 
+SELECT recipe.recipeID, recipe.recipeName, recipe.cookTime
+  FROM recipe;
+
+
+INSERT INTO recipeAward(awardFID, recipeFID)
+       VALUES(4, 1),
+			(5, 1),
+            (3, 2),
+			(4, 3),
+            (5, 4),
+            (4, 5),
+			(2, 6),
+            (7, 7),
+			(4, 8),
+            (5, 9),
+            (4, 10),
+			(5, 11),
+            (3, 12),
+			(9, 13),
+            (6, 14),
+            (4, 15),
+			(5, 16),
+            (2, 17),
+			(9, 18),
+            (6, 19),
+            (10, 20);
+
+INSERT INTO recipeInBook(bookFID, recipeFID)
+       VALUES(1, 1),
+			(1, 2),
+            (1, 3),
+			(1, 4),
+            (1, 5),
+            (1, 6),
+			(1, 7),
+            (1, 8),
+			(1, 9),
+            (1, 10),
+            (2, 5),
+			(2, 8),
+            (2, 2),
+			(2, 9),
+            (2, 5),
+            (2, 2),
+			(2, 1),
+            (2, 9),
+			(2, 17),
+            (2, 13),
+            (3, 1),
+			(3, 11),
+            (3, 3),
+			(3, 18),
+            (3, 5),
+            (3, 12),
+			(3, 7),
+            (3, 19),
+			(3, 9),
+            (3, 10),
+            (4, 11),
+			(4, 19),
+            (4, 17),
+			(4, 4),
+            (4, 16),
+            (4, 6),
+			(4, 13),
+            (4, 8),
+			(4, 18),
+            (4, 10),
+            (5, 1),
+			(5, 14),
+            (5, 3),
+			(5, 16),
+            (5, 5),
+            (5, 13),
+			(5, 18),
+            (5, 8),
+			(5, 19),
+            (5, 10);
